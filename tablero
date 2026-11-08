@@ -1,0 +1,43 @@
+def resolver_n_reinas(n):
+    soluciones = []
+    columnas_por_fila = []
+
+    def colocar_reina(fila):
+        # Si hemos colocado una reina en cada fila, guardamos el tablero.
+        if fila == n:
+            soluciones.append(columnas_por_fila.copy())
+            return
+
+        for columna in range(n):
+            # Comprobamos si otra reina está en la misma columna o diagonal.
+            hay_ataque = any(
+                columna == otra_columna
+                or abs(columna - otra_columna) == fila - otra_fila
+                for otra_fila, otra_columna in enumerate(columnas_por_fila)
+            )
+
+            if hay_ataque:
+                continue
+
+            columnas_por_fila.append(columna)
+            colocar_reina(fila + 1)
+            columnas_por_fila.pop()  # Quitamos la reina para probar otra columna.
+
+    colocar_reina(0)
+    return soluciones
+
+
+try:
+    n = int(input("Tamaño del tablero (N): "))
+    if n < 1:
+        raise ValueError
+except ValueError:
+    print("Introduce un número entero mayor que cero.")
+else:
+    soluciones = resolver_n_reinas(n)
+    print(f"Total de soluciones para N = {n}: {len(soluciones)}")
+
+    for numero, solucion in enumerate(soluciones, start=1):
+        print(f"\nSolución {numero}")
+        for columna in solucion:
+            print("." * columna + "Q" + "." * (n - columna - 1))
